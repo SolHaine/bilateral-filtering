@@ -16,6 +16,8 @@ import pickle
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 
+import time
+
 
 #3D kernel filter / Bilateral grid
 #http://people.csail.mit.edu/sparis/bf_course/slides/06_implementation.pdf
@@ -24,7 +26,7 @@ from scipy.interpolate import griddata
 
 def gaussianFilter(sigmaS, sigmaR, gamma) :
     #convolve on the 3 axis
-    N = 3 * (sigmaS + sigmaR)
+    N = int(3 * (sigmaS + sigmaR))
     x= np.arange(-N,N+1,1) 
     y = x 
     i = x
@@ -60,7 +62,13 @@ def get_Wi_W(X,Y, I, sigS, sigR) :
 
 
 #Pseudo code source
+
+#without down and up sampling
 # http://people.csail.mit.edu/sparis/bf_course/course_notes.pdf
+
+#with down and up sampling
+#http://people.csail.mit.edu/sparis/publi/2009/fntcgv/Paris_09_Bilateral_filtering.pdf
+
 def bilateralGrid(sigmaS, sigmaR, image):
     #assert(sigmaS>=1 and sigmaR>=1)
     #intensity of one pixel = gray level 
@@ -96,7 +104,10 @@ def bilateralGrid(sigmaS, sigmaR, image):
 
 def main() : 
     im=skimage.io.imread('cat.png')
-    BF = bilateralGrid(0.5,0.5,im)
+    startTime=time.time()
+    BF = bilateralGrid(8,0.05,im)
+    endTime =time.time()
+    print('execution time - complexity', (endTime - startTime  )/60, " minutes" )
     plt.imshow(BF,cmap=plt.cm.Greys_r)
     
 
