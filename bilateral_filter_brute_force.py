@@ -24,7 +24,7 @@ def bruteForceBilateralFilter(image, sigmaS, sigmaR):
                 for y in range(image.shape[1]):
                     norm = np.sqrt((i-x)*(i-x)+(j-y)*(j-y))
                     if norm < 2*sigmaS:
-                        print("pixel",i, j, "and", x,y) #so we can see where we are
+                        #print("pixel",i, j, "and", x,y) #so we can see where we are
                         w = gaussianKernel(norm, sigmaS) * gaussianKernel(np.abs(image[i,j]-image[x,y]), sigmaR)
                         bf_image[i,j] += w*image[x,y]
                         Wp += w
@@ -43,13 +43,13 @@ def main():
     print(image_grayscale)
     
     start_time = time.time()
-    filtered_image = bruteForceBilateralFilter(image_grayscale, 2, 0.2) #takes a while with sigmaS > 2 or big images
+    filtered_image = bruteForceBilateralFilter(image_grayscale, 3, 0.2) #takes a while with sigmaS > 2 or big images
     print("--- %s seconds ---" % (time.time() - start_time))
     
     f.add_subplot(1,2, 2)
     plt.imshow(filtered_image, cmap=plt.cm.gray)
     
-    imageio.imwrite("./brute_force_outputs/ghibli_test_2_02.png", filtered_image)
+    imageio.imwrite("./brute_force_outputs/filtered_ghibli_3_02.png", filtered_image)
     
     
 
