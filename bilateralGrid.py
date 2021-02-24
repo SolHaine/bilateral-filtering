@@ -31,7 +31,7 @@ def gaussianFilter(sigmaS, sigmaR, gamma) :
     y = x 
     i = x
     xx, yy, ii = np.meshgrid(x,y,i)
-    kernel = np.exp(-(xx**2 + yy**2/(2*sigmaS**2)) + ((ii**2)/(2*sigmaR**2)))
+    kernel = np.exp(-((xx**2 + yy**2/(2*sigmaS**2)) + ((ii**2)/(2*sigmaR**2))))
     return kernel
 
 def smoothGaussian(gamma, sigmaS, sigmaR):
@@ -44,14 +44,14 @@ def smoothGaussian(gamma, sigmaS, sigmaR):
 
 #Wi get gamma : 3D structure
 #W get non negative weight
-def get_Wi_W(X,Y, I, sigS, sigR) :
-    Wi = np.zeros((X,Y,int(np.round(sigR))+1))
+def get_Wi_W(X,Y, I, sigS, sigR, R) :
+    Wi = np.zeros((X,Y,R+1))
     print('Wi shape in downS', Wi.shape)
-    W = np.zeros((X,Y,int(np.round(sigR))+1))
+    W = np.zeros((X,Y,int(np.round(R))+1))
     for i in range(X) :
         for j in range(Y) :
-            z = int(np.round(I[i,j]*sigR))
-            assert(z>=0 and z<int(np.round(sigR))+1)
+            z = int(np.round(I[i,j]*R))
+            assert(z>=0 and z<R+1)
             #Gamma 3D
             #Intensity
             #print('z ',z)
@@ -70,15 +70,14 @@ def get_Wi_W(X,Y, I, sigS, sigR) :
 #http://people.csail.mit.edu/sparis/publi/2009/fntcgv/Paris_09_Bilateral_filtering.pdf
 
 def bilateralGrid(sigmaS, sigmaR, image):
-    #assert(sigmaS>=1 and sigmaR>=1)
     #intensity of one pixel = gray level 
     I = skimage.color.rgb2gray(image)
     plt.imshow(I,cmap=plt.cm.Greys_r)
     plt.pause(1)
     X = image.shape[0]
     Y = image.shape[1]
-    
-    Wi, W = get_Wi_W(X,Y,I,sigmaS,sigmaR)
+    R = 20
+    Wi, W = get_Wi_W(X,Y,I,sigmaS,sigmaR,R)
     print('Wi shape', Wi.shape)
     print('W shape', W.shape)
     Wi_smooth = smoothGaussian(Wi, sigmaS, sigmaR)
@@ -97,18 +96,25 @@ def bilateralGrid(sigmaS, sigmaR, image):
             #print('np.sum(W_smooth[i,j])', np.sum(W_smooth[i,j]))
             #There is normally one element != 0, so we make the sum to get it
             # wI~ / w~
-            BF[i,j] += abs( np.sum(Wi_smooth[i,j])/ np.sum(W_smooth[i,j]))
+            z = int(np.round(I[i,j]*R))
+            BF[i,j] += abs( Wi_smooth[i,j,z]/ W_smooth[i,j,z])
             if (BF[i,j] > 1) :
                 BF[i,j] =1
     return BF
 
 def main() : 
-    im=skimage.io.imread('cat.png')
+    im=skimage.io.imread('ghibli.jpg')
     startTime=time.time()
-    BF = bilateralGrid(8,0.05,im)
+    BF = bilateralGrid(16,0.8,im)
     endTime =time.time()
-    print('execution time - complexity', (endTime - startTime  )/60, " minutes" )
+    duration = endTime - startTime
+    if(duration < 60) :
+        print('execution time - complexity', duration, "secondes" )
+    else :
+        print('execution time - complexity', duration, "secondes" )
+        print('execution time - complexity', int(duration/60), " minutes", abs( int(duration/60) - duration/60 )*60, 'secondes' )
     plt.imshow(BF,cmap=plt.cm.Greys_r)
+    skimage.io.imsave('./bilateral_grid_outputs/BG_ghibli_16_08.png', BF)
     
 
 main()

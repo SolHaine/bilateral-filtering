@@ -92,7 +92,7 @@ def main():
     # stack the images horizontally
     out = np.hstack( [img, bilateral] )
     
-    skio.imsave('./jamesgregson_outputs/ghibli_16_08.png', out*255.0)
+    skio.imsave('./jamesgregson_outputs/ghibli_8_08.png', out)
 
 
 if __name__ == "__main__":

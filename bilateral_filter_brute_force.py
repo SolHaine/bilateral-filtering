@@ -40,16 +40,16 @@ def main():
     f = plt.figure()
     f.add_subplot(1,2, 1)
     plt.imshow(image_grayscale, cmap=plt.cm.gray)
-    print(image_grayscale)
+    #print(image_grayscale)
     
     start_time = time.time()
-    filtered_image = bruteForceBilateralFilter(image_grayscale, 3, 0.2) #takes a while with sigmaS > 2 or big images
+    filtered_image = bruteForceBilateralFilter(image_grayscale, 3, 0.05) #takes a while with sigmaS > 2 or big images
     print("--- %s seconds ---" % (time.time() - start_time))
     
     f.add_subplot(1,2, 2)
     plt.imshow(filtered_image, cmap=plt.cm.gray)
     
-    imageio.imwrite("./brute_force_outputs/filtered_ghibli_3_02.png", filtered_image)
+    #imageio.imwrite("./brute_force_outputs/filtered_ghibli_3_02.png", filtered_image)
     
     
 

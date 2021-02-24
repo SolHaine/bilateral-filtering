@@ -85,10 +85,10 @@ def bilateralGrid(sigmaS, sigmaR, image):
         w=0
         for j in range (BF.shape[1]) :
             k = int(np.round(I[i,j]*255)) 
-            wi = GB_gamma[i,j,k][0]
-            print('wi', GB_gamma[i,j,k][0])
-            w = GB_gamma[i,j,k][1]
-            print('w', GB_gamma[i,j,k][1])
+            wi = np.sum(GB_gamma[i,j,:][0])
+            #print('wi', GB_gamma[i,j,k][0])
+            w = np.sum(GB_gamma[i,j,:][1])
+            #print('w', GB_gamma[i,j,k][1])
             BF[i,j] = abs(wi/w)
             if (BF[i,j] > 1) :
                 BF[i,j] = 1
